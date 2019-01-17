@@ -1,5 +1,5 @@
 const socket = require("./sockets")("Pawel");
-const filterMessage = require("./chat-modules/filterMessage");
+const filterMessage = require("./chat_modules/filterMessage");
 
 let submit = document.getElementById("send");
 let textarea = document.getElementById("message");

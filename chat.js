@@ -1,14 +1,16 @@
-const socket = require("./sockets")("Pawel");
+const { ipcRenderer, remote } = require("electron");
 const filterMessage = require("./chat_modules/filterMessage");
 const processMessage = require("./chat_modules/processMessage");
 const moment = require("moment");
 moment.locale("pl");
 
+socket = remote.getGlobal("socket").conn;
+
 let submit = document.getElementById("send");
 let textarea = document.getElementById("message");
 let chat = document.getElementById("chat");
 
-let username = "Paweł";
+let username = remote.getGlobal("socket").username;
 
 textarea.focus();
 

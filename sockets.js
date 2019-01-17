@@ -1,11 +1,15 @@
-const io = require("socket.io-client")
+const io = require("socket.io-client");
 
-let socket = user => {
-    const conn = io('http://localhost:3000')
+let socket = {
+    conn: null,
+    username: null,
+    connected: false,
+    connect: function(addr, user, cb) {
+        this.conn = io(addr);
+        this.conn.on("connect", () => {
+            this.connected = true;
+        });
+    }
+};
 
-    conn.emit('logIn', {user})
-
-    return conn
-}
-
-module.exports = socket
+module.exports = socket;

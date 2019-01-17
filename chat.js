@@ -1,52 +1,51 @@
-const socket = require("./sockets")("Pawel")
-const filterMessage = require("./chat-modules/filterMessage")
+const socket = require("./sockets")("Pawel");
+const filterMessage = require("./chat-modules/filterMessage");
 
-let submit = document.getElementById("send")
-let textarea = document.getElementById("message")
-let chat = document.getElementById("chat")
+let submit = document.getElementById("send");
+let textarea = document.getElementById("message");
+let chat = document.getElementById("chat");
 
 let sendMessage = () => {
-    let message = textarea.value
+    let message = textarea.value;
 
-    message = filterMessage(message)
-    if(message) socket.emit('chat-send', {message})
+    message = filterMessage(message);
+    if (message) socket.emit("chat-send", { message });
 
-    textarea.value = ''
-}
+    textarea.value = "";
+};
 
-document.addEventListener('keydown', e => {
-    if(e.keyCode == 13) {
-        sendMessage()
-        textarea.value = textarea.value.replace(/[\r\n\v]+/g, '')
-        return false
+textarea.addEventListener("keydown", e => {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        sendMessage();
     }
-})
+});
 
 submit.addEventListener("click", () => {
-    sendMessage()
-})
+    sendMessage();
+});
 
-socket.on('chat-message', data => {
-    generateMessageView(data)
+socket.on("chat-message", data => {
+    generateMessageView(data);
 
     // todo: nie scrolluj jak nie jest na samym dole
-    chat.scrollTo(0, chat.scrollHeight)
-})
+    chat.scrollTo(0, chat.scrollHeight);
+});
 
-let generateMessageView = (data) => {
-    let msgBox = document.createElement('div')
-    msgBox.classList.add("chat-message")
+let generateMessageView = data => {
+    let msgBox = document.createElement("div");
+    msgBox.classList.add("chat-message");
 
-    let msgSender = document.createElement('div')
-    msgSender.classList.add("chat-message-sender")
-    msgSender.textContent = data.user
+    let msgSender = document.createElement("div");
+    msgSender.classList.add("chat-message-sender");
+    msgSender.textContent = data.user;
 
-    let msgContent = document.createElement('div')
-    msgContent.classList.add("chat-message-content")
-    msgContent.textContent = data.message
+    let msgContent = document.createElement("div");
+    msgContent.classList.add("chat-message-content");
+    msgContent.textContent = data.message;
 
-    msgBox.appendChild(msgSender)
-    msgBox.appendChild(msgContent)
+    msgBox.appendChild(msgSender);
+    msgBox.appendChild(msgContent);
 
-    chat.appendChild(msgBox)
-}
+    chat.appendChild(msgBox);
+};

@@ -75,9 +75,10 @@ body {
     background: #eee;
     margin-right: 16px;
     flex-direction: column;
-    padding: 0.7em;
+    padding: 0.4em;
     box-sizing: border-box;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .users-online {
@@ -116,12 +117,46 @@ button {
 
 .chat-message {
     color: #333;
-    width: 100%;
     height: fit-content;
+    text-align: right;
+    border-radius: 0.4em;
+    padding: 0.5em;
+    box-sizing: border-box;
+    width: fit-content;
+    margin-left: auto;
+
+    padding-left: 2em;
+    padding-right: 0.5em;
+}
+
+.chat-message.author {
     text-align: left;
-    margin-bottom: 0.7em;
+
+    padding-left: 0.5em;
+    padding-right: 2em;
+    margin-left: 0;
+}
+
+.chat-message.marked {
+    background: linear-gradient(
+        90.47deg,
+        rgba(237, 140, 65, 0.28) -2.91%,
+        rgba(206, 194, 230, 0.78) 101.13%
+    );
 }
 
 .chat-message-sender {
     font-weight: 600;
+    font-size: 0.9em;
+}
+
+.chat-message-content {
+    font-size: 0.8em;
+    margin-top: 0.2em;
+}
+
+.chat-message-date {
+    font-size: 0.68em;
+    color: #8e8e8e;
+    margin-top: 0.2em;
 }

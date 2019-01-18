@@ -1,22 +1,11 @@
 const { ipcRenderer, remote } = require("electron");
 
+let socket;
 document.getElementById("open").addEventListener("click", () => {
-    let login = document.getElementById("login").value;
+    let data = {};
+    data.login = document.getElementById("login").value;
+    data.addr = document.getElementById("addr").value;
 
-    // ipcRenderer.send("establishConn", {
-    //     addr: "http://localhost:3000",
-    //     login
-    // });
-
-    remote.getGlobal("socket").connect(
-        "http://localhost:3000",
-        login
-    );
+    window.open("index.html");
+    ipcRenderer.send("socketCredentials", data);
 });
-
-let interval = setInterval(() => {
-    if (remote.getGlobal("socket").connected) {
-        window.open("index.html");
-        clearInterval(interval);
-    }
-}, 1000);

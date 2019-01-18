@@ -22,17 +22,6 @@ app.on("activate", () => {
     }
 });
 
-// ipcMain.on("establishConn", (e, arg) => {
-//     socket.conn = null;
-//     socket.connect(
-//         arg.addr,
-//         arg.login,
-//         cb => {
-//             e.sender.send("socket", socket);
-//         }
-//     );
-// });
-
-// ipcMain.on("getSocket", (e, arg) => {
-//     e.sender.send("socket", socket);
-// });
+ipcMain.on("setSocket", (event, socket) => {
+    global.socket = socket;
+});

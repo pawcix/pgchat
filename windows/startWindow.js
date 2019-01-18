@@ -11,6 +11,8 @@ function createStartWindow(createChatWindow) {
         name: "Start"
     });
 
+    win.asd = "asd";
+
     win.loadFile("start.html");
     win.webContents.openDevTools();
 
@@ -22,6 +24,8 @@ function createStartWindow(createChatWindow) {
         win.show();
     });
 
+    let newWindow;
+
     win.webContents.on(
         "new-window",
         (event, url, frameName, disposition, options, additionalFeatures) => {
@@ -31,16 +35,22 @@ function createStartWindow(createChatWindow) {
                 height: 450
             });
             event.newGuest = new BrowserWindow(options);
+            win.hide();
+            newWindow = event.newGuest;
             event.newGuest.loadFile("index.html");
             event.newGuest.webContents.openDevTools();
             event.newGuest.on("closed", () => {
                 win.reload();
                 win.show();
-                global.socket.connected = false;
-                global.socket.conn = null;
             });
         }
     );
+
+    ipcMain.on("socketCredentials", (e, data) => {
+        newWindow.socketCredentials = {};
+        newWindow.socketCredentials.login = data.login;
+        newWindow.socketCredentials.addr = data.addr;
+    });
 
     return win;
 }

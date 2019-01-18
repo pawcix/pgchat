@@ -2,95 +2,128 @@ const { ipcRenderer, remote } = require("electron");
 const filterMessage = require("./chat_modules/filterMessage");
 const processMessage = require("./chat_modules/processMessage");
 const moment = require("moment");
+
 moment.locale("pl");
 
-socket = remote.getGlobal("socket").conn;
+let chatWindow = document.getElementById("chat-content");
+let chatLoading = document.getElementById("chat-loading");
+document.getElementById("chat-failedtoconnect").style.display = "none";
+chatWindow.style.display = "none";
 
-let submit = document.getElementById("send");
-let textarea = document.getElementById("message");
-let chat = document.getElementById("chat");
+s = require("./sockets").connect(
+    remote.getCurrentWindow().socketCredentials.addr,
+    remote.getCurrentWindow().socketCredentials.login
+);
 
-let username = remote.getGlobal("socket").username;
+let timer = 0;
 
-textarea.focus();
+let interval = setInterval(() => {
+    if (s.connected) {
+        socket = s.conn;
+        username = s.username;
 
-let sendMessage = () => {
-    let message = textarea.value;
+        chatLoading.style.display = "none";
+        chatWindow.style.display = "flex";
 
-    message = filterMessage(message);
-    if (message) {
-        socket.emit("chat-send", { message });
-        textarea.setAttribute("disabled", true);
+        chat();
+        clearInterval(interval);
+    } else {
+        if (timer > 10) {
+            document.getElementById("chat-failedtoconnect").style.display =
+                "block";
+        }
+
+        timer++;
     }
-};
+}, 1000);
 
-textarea.addEventListener("keydown", e => {
-    if (e.keyCode == 13) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
+let chat = () => {
+    let submit = document.getElementById("send");
+    let textarea = document.getElementById("message");
+    let chat = document.getElementById("chat");
 
-submit.addEventListener("click", () => {
-    sendMessage();
-});
+    let username = s.username;
 
-socket.on("chat-message", data => {
-    generateMessageView(data);
-
-    // todo: nie scrolluj jak nie jest na samym dole
-    chat.scrollTo(0, chat.scrollHeight);
-});
-
-socket.on("chat-message-status", data => {
-    textarea.disabled = false;
-    textarea.value = "";
     textarea.focus();
 
-    if (data.success) {
-        // udało się wysłać wiadomość
-    } else {
-        // nie udało się wysłać
-    }
-});
+    let sendMessage = () => {
+        let message = textarea.value;
 
-let generateMessageView = data => {
-    let msgBox = document.createElement("div");
-    msgBox.classList.add("chat-message");
+        message = filterMessage(message);
+        if (message) {
+            socket.emit("chat-send", { message });
+            textarea.setAttribute("disabled", true);
+        }
+    };
 
-    if (data.author) {
-        msgBox.classList.add("author");
-    }
+    textarea.addEventListener("keydown", e => {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
 
-    let msgSender = document.createElement("div");
-    let msgContent = document.createElement("div");
-    let msgDate = document.createElement("div");
+    submit.addEventListener("click", () => {
+        sendMessage();
+    });
 
-    let msgElements = { msgContent, msgSender, msgBox, msgDate };
-    processMessage(msgElements, data);
+    socket.on("chat-message", data => {
+        generateMessageView(data);
 
-    msgElements.msgSender.classList.add("chat-message-sender");
-    msgElements.msgContent.classList.add("chat-message-content");
-    msgElements.msgDate.classList.add("chat-message-date");
+        // todo: nie scrolluj jak nie jest na samym dole
+        chat.scrollTo(0, chat.scrollHeight);
+    });
 
-    msgElements.msgSender.innerText = data.user;
-    msgElements.msgContent.innerText = data.message;
-    msgElements.msgDate.innerText = moment(data.date).fromNow();
+    socket.on("chat-message-status", data => {
+        textarea.disabled = false;
+        textarea.value = "";
+        textarea.focus();
 
-    msgElements.msgDate.setAttribute("data-date", data.date);
+        if (data.success) {
+            // udało się wysłać wiadomość
+        } else {
+            // nie udało się wysłać
+        }
+    });
 
-    msgElements.msgBox.appendChild(msgElements.msgSender);
-    msgElements.msgBox.appendChild(msgElements.msgContent);
-    msgElements.msgBox.appendChild(msgElements.msgDate);
+    let generateMessageView = data => {
+        let msgBox = document.createElement("div");
+        msgBox.classList.add("chat-message");
 
-    chat.appendChild(msgElements.msgBox);
+        if (data.author) {
+            msgBox.classList.add("author");
+        }
+
+        let msgSender = document.createElement("div");
+        let msgContent = document.createElement("div");
+        let msgDate = document.createElement("div");
+
+        let msgElements = { msgContent, msgSender, msgBox, msgDate };
+        processMessage(msgElements, data);
+
+        msgElements.msgSender.classList.add("chat-message-sender");
+        msgElements.msgContent.classList.add("chat-message-content");
+        msgElements.msgDate.classList.add("chat-message-date");
+
+        msgElements.msgSender.innerText = data.user;
+        msgElements.msgContent.innerText = data.message;
+        msgElements.msgDate.innerText = moment(data.date).fromNow();
+
+        msgElements.msgDate.setAttribute("data-date", data.date);
+
+        msgElements.msgBox.appendChild(msgElements.msgSender);
+        msgElements.msgBox.appendChild(msgElements.msgContent);
+        msgElements.msgBox.appendChild(msgElements.msgDate);
+
+        chat.appendChild(msgElements.msgBox);
+    };
+
+    setInterval(() => {
+        let elements = document.getElementsByClassName("chat-message-date");
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].innerText = moment(
+                parseInt(elements[i].getAttribute("data-date"))
+            ).fromNow();
+        }
+    }, 5000);
 };
-
-setInterval(() => {
-    let elements = document.getElementsByClassName("chat-message-date");
-    for (let i = 0; i < elements.length; i++) {
-        elements[i].innerText = moment(
-            parseInt(elements[i].getAttribute("data-date"))
-        ).fromNow();
-    }
-}, 5000);

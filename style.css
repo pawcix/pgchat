@@ -84,7 +84,28 @@ body {
 .users-online {
     display: flex;
     background: #eee;
+    flex-direction: column;
     width: 25%;
+}
+
+.users-online-list {
+    color: #333;
+    font-size: .8em;
+    padding-left: .8em;
+}
+
+.users-online-user {
+    margin-top: .1em;
+}
+
+.users-online-user .fa {
+    font-size: .7em;
+    margin-right: .8em;
+    vertical-align: middle;
+}
+
+.fa-circle.online {
+    color: rgb(158, 241, 141);
 }
 
 .chat-submit {
@@ -172,4 +193,27 @@ button {
     padding-left: .3em;
     padding-right: .3em;
     background: rgba(0, 0, 0, 0.06);
+}
+
+.notification {
+    color: #a9a9a9;
+    font-size: .7em;
+    font-family: "Lato";
+}
+
+.notification-box {
+    padding-left: 0.5em;
+}
+
+.online {
+    font-weight: 700;
+    font-family: "Lato";
+}
+
+.header {
+    color: #333;
+    padding: .8em;
+    font-size: .9em;
+    font-weight: 700;
+    font-family: "Lato";
 }

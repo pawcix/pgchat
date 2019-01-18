@@ -41,7 +41,8 @@ let chat = () => {
     let textarea = document.getElementById("message");
     let chat = document.getElementById("chat");
 
-    let username = s.username;
+    let username = s.username;    
+    let usersOnline = [];
 
     textarea.focus();
 
@@ -68,6 +69,81 @@ let chat = () => {
         // todo: nie scrolluj jak nie jest na samym dole
         chat.scrollTo(0, chat.scrollHeight);
     });
+
+    // notifications
+    socket.on("notification", data => {
+        console.log(data);
+        notification(data.type, data.text);
+    })
+
+    socket.on("usersOnline-fetch", data => {
+
+        console.log("fetch");
+        usersOnline = data;
+        updateUsersOnline();
+    })
+
+    socket.on("usersOnline-add", data => {
+        usersOnline.push(data);
+        updateUsersOnline();
+    })
+
+    socket.on("usersOnline-remove", data => {
+        let index = usersOnline.findIndex(el => {
+            return el.name == data.name;
+        })
+
+        if(typeof index != 'undefined') usersOnline.splice(index, 1);
+        updateUsersOnline();
+    })
+
+    socket.on("usersOnline-update", data => {
+        let index = usersOnline.findIndex(el => {
+            return el.name == data.name;
+        })
+
+        if(typeof index != 'undefined') usersOnline[index] = data;
+        updateUsersOnline();
+    })
+
+    // users online
+    let updateUsersOnline = () => {
+        document.getElementById("users-online-list").innerHTML = "";
+        for(let user in usersOnline) {
+            
+            let userBox = document.createElement("div");
+            let userSpan = document.createElement("span");
+            let userStatus = document.createElement("i");
+
+            userStatus.classList.add("fa");
+            userStatus.classList.add("fa-circle");
+            userStatus.classList.add(usersOnline[user].status);
+
+            userBox.classList.add("users-online-user");
+            
+            userSpan.innerHTML = usersOnline[user].name;
+
+            userBox.append(userStatus);
+            userBox.append(userSpan);
+
+            document.getElementById("users-online-list").append(userBox);
+        }
+    }
+    updateUsersOnline();
+
+    let notification = (type, text) => {
+        let notifyBox = document.createElement("div");
+        let notifySpan = document.createElement("span");
+
+        notifyBox.classList.add("notification-box");
+
+        notifySpan.classList.add(`notification`);
+        notifySpan.classList.add(`${type}`);
+        notifySpan.innerHTML = text;
+
+        notifyBox.append(notifySpan);
+        chat.append(notifyBox);
+    }
 
     socket.on("chat-message-status", data => {
         textarea.disabled = false;

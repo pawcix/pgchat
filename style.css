@@ -51,7 +51,7 @@ body {
 
 .first-line {
     display: flex;
-    height: 80%;
+    height: 89%;
     width: 100%;
 }
 
@@ -59,12 +59,12 @@ body {
 .chat-window,
 .chat-textarea,
 .users-online {
-    border-radius: 2px;
+    border-radius: 8px;
 }
 
 .second-line {
     display: flex;
-    height: 20%;
+    height: 11%;
     width: 100%;
     margin-top: 16px;
 }
@@ -96,8 +96,7 @@ body {
 .chat-textarea {
     display: flex;
     background: #eee;
-    width: 75%;
-    margin-right: 16px;
+    width: 100%;
 }
 
 textarea {
@@ -109,6 +108,13 @@ textarea {
     border: 0;
     box-sizing: border-box;
     white-space: pre-wrap;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: "Lato";
+}
+
+textarea:focus {
+    outline: none;
 }
 
 button {
@@ -159,4 +165,11 @@ button {
     font-size: 0.68em;
     color: #8e8e8e;
     margin-top: 0.2em;
+}
+
+.marked .marked-username {
+    font-weight: 700;
+    padding-left: .3em;
+    padding-right: .3em;
+    background: rgba(0, 0, 0, 0.06);
 }

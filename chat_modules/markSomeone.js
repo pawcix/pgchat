@@ -10,6 +10,16 @@ let markSomeone = (msgElements, data) => {
             })
         ) {
             msgElements.msgBox.classList.add("marked");
+            let msg = data.message;
+            let splitted = msg.split("@"+username);
+
+            data.message = '';
+
+            for(let i = 0; i<splitted.length; i++) {
+                if(i == splitted.length-1) data.message += splitted[i];
+                else data.message += splitted[i] + '<span class="marked-username">@' + username + '</span>';
+            }
+            
         }
     }
 };

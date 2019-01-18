@@ -38,7 +38,6 @@ let interval = setInterval(() => {
 }, 1000);
 
 let chat = () => {
-    let submit = document.getElementById("send");
     let textarea = document.getElementById("message");
     let chat = document.getElementById("chat");
 
@@ -61,10 +60,6 @@ let chat = () => {
             e.preventDefault();
             sendMessage();
         }
-    });
-
-    submit.addEventListener("click", () => {
-        sendMessage();
     });
 
     socket.on("chat-message", data => {
@@ -99,6 +94,7 @@ let chat = () => {
         let msgDate = document.createElement("div");
 
         let msgElements = { msgContent, msgSender, msgBox, msgDate };
+        data.message = data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         processMessage(msgElements, data);
 
         msgElements.msgSender.classList.add("chat-message-sender");
@@ -106,7 +102,8 @@ let chat = () => {
         msgElements.msgDate.classList.add("chat-message-date");
 
         msgElements.msgSender.innerText = data.user;
-        msgElements.msgContent.innerText = data.message;
+
+        msgElements.msgContent.innerHTML = data.message;
         msgElements.msgDate.innerText = moment(data.date).fromNow();
 
         msgElements.msgDate.setAttribute("data-date", data.date);

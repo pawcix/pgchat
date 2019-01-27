@@ -25,7 +25,16 @@ let interval = setInterval(() => {
         chatLoading.style.display = "none";
         chatWindow.style.display = "flex";
 
-        chat();
+        socket.emit("userReady", {});
+
+        socket.on("connectionStatus", status => {
+            if (status) {
+                chat();
+            } else {
+                console.log("problem z zalogowaniem");
+            }
+        });
+
         clearInterval(interval);
     } else {
         if (timer > 10) {
@@ -41,10 +50,14 @@ let chat = () => {
     let textarea = document.getElementById("message");
     let chat = document.getElementById("chat");
 
-    let username = s.username;    
+    let username = s.username;
     let usersOnline = [];
 
     textarea.focus();
+
+    socket.on("checkActivity", () => {
+        socket.emit("getStatus", { status: 2 });
+    });
 
     let sendMessage = () => {
         let message = textarea.value;
@@ -72,45 +85,18 @@ let chat = () => {
 
     // notifications
     socket.on("notification", data => {
-        console.log(data);
         notification(data.type, data.text);
-    })
+    });
 
     socket.on("usersOnline-fetch", data => {
-
-        console.log("fetch");
         usersOnline = data;
         updateUsersOnline();
-    })
-
-    socket.on("usersOnline-add", data => {
-        usersOnline.push(data);
-        updateUsersOnline();
-    })
-
-    socket.on("usersOnline-remove", data => {
-        let index = usersOnline.findIndex(el => {
-            return el.name == data.name;
-        })
-
-        if(typeof index != 'undefined') usersOnline.splice(index, 1);
-        updateUsersOnline();
-    })
-
-    socket.on("usersOnline-update", data => {
-        let index = usersOnline.findIndex(el => {
-            return el.name == data.name;
-        })
-
-        if(typeof index != 'undefined') usersOnline[index] = data;
-        updateUsersOnline();
-    })
+    });
 
     // users online
     let updateUsersOnline = () => {
         document.getElementById("users-online-list").innerHTML = "";
-        for(let user in usersOnline) {
-            
+        for (let user in usersOnline) {
             let userBox = document.createElement("div");
             let userSpan = document.createElement("span");
             let userStatus = document.createElement("i");
@@ -120,7 +106,7 @@ let chat = () => {
             userStatus.classList.add(usersOnline[user].status);
 
             userBox.classList.add("users-online-user");
-            
+
             userSpan.innerHTML = usersOnline[user].name;
 
             userBox.append(userStatus);
@@ -128,7 +114,7 @@ let chat = () => {
 
             document.getElementById("users-online-list").append(userBox);
         }
-    }
+    };
     updateUsersOnline();
 
     let notification = (type, text) => {
@@ -143,7 +129,7 @@ let chat = () => {
 
         notifyBox.append(notifySpan);
         chat.append(notifyBox);
-    }
+    };
 
     socket.on("chat-message-status", data => {
         textarea.disabled = false;

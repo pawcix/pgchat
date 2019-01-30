@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/pawcix/pgchat#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "electron": "^4.0.1",
     "electron-packager": "^13.0.1",
     "electron-reload": "^1.4.0",
+    "jquery": "^3.3.1",
     "moment": "^2.23.0",
     "socket.io-client": "^2.2.0"
   }

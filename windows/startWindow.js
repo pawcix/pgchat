@@ -3,8 +3,8 @@ const { ipcMain } = require("electron");
 
 function createStartWindow(createChatWindow) {
     win = new BrowserWindow({
-        width: 650,
-        height: 450,
+        width: 350,
+        height: 500,
         titleBarStyle: "hiddenInset",
         show: false,
         frame: false,

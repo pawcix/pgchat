@@ -26,6 +26,10 @@ $("#form").submit(e => {
     let conn = io(data.addr);
     let timer = 1;
 
+    if (!data.addr.includes("http://") && !data.addr.includes("https://")) {
+        data.addr = `http://${data.addr}`;
+    }
+
     axios
         .get(`${data.addr}/status`)
         .then(res => {
